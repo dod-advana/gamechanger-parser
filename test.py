@@ -1,4 +1,7 @@
-from parse.parse import parse, pdf_to_json
+import sys
+sys.path.append('../') # Sets parent directory to reach parsers
+
+from parsers.parse import parse, pdf_to_json
 
 out_dir = "parse_module_test/"
 

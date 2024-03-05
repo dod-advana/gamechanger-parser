@@ -1,5 +1,5 @@
 import fitz
-from parse.ocr_utils import PageCountParse
+from parsers.ocr_utils import PageCountParse
 
 def get_fitz_doc_obj(f_name):
     doc = fitz.open(f_name)

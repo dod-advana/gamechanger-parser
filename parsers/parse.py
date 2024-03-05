@@ -5,7 +5,7 @@ import json
 import typing
 from datetime import datetime
 import multiprocessing
-from parse.ocr_utils import OCRError, UnparseableDocument, PageCountParse
+from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
 
 
 def write(out_dir="./", ex_dict={}):
@@ -20,10 +20,10 @@ def write(out_dir="./", ex_dict={}):
     return True
 
 
-from parse.pages import handle_pages
-from parse.pdf_reader import get_fitz_doc_obj
-from parse.file_utils import coerce_file_to_pdf
-from parse.ocr import get_ocr_filename
+from parsers.pages import handle_pages
+from parsers.pdf_reader import get_fitz_doc_obj
+from parsers.file_utils import coerce_file_to_pdf
+from parsers.ocr import get_ocr_filename
 
 
 def parse(
