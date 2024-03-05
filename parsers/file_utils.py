@@ -123,12 +123,12 @@ def is_encrypted_pdf(file: t.Union[Path, str]) -> bool:
         return True  # err on a side of caution
 
 
-from parse.html_utils import (
+from parsers.html_utils import (
     convert_html_file_to_pdf,
     convert_html_to_pdf,
     convert_text_to_html,
 )
-from parse.reading_in import read_plain_text
+from parsers.reading_in import read_plain_text
 
 
 def coerce_file_to_pdf(filepath: t.Union[Path, str]) -> str:

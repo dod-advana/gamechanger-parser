@@ -1,4 +1,4 @@
-from parse.text_utils import utf8_pass, clean_text
+from parsers.text_utils import utf8_pass, clean_text
 
 
 def create_page_dict(page_num, page_text, doc_dict):

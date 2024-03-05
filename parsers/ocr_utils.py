@@ -7,7 +7,7 @@ Reference: https://ocrmypdf.readthedocs.io/en/latest/installation.html
 
 from pathlib import Path
 import typing as t
-from parse.file_utils import is_pdf, is_ocr_pdf, is_encrypted_pdf
+from parsers.file_utils import is_pdf, is_ocr_pdf, is_encrypted_pdf
 import ocrmypdf
 import sys
 from enum import Enum

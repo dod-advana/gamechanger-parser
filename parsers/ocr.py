@@ -1,7 +1,7 @@
-from parse.ocr_utils import PDFOCR, OCRJobType, OCRError
+from parsers.ocr_utils import PDFOCR, OCRJobType, OCRError
 from pathlib import Path
 import filetype
-from parse.file_utils import is_pdf, is_ocr_pdf, is_encrypted_pdf
+from parsers.file_utils import is_pdf, is_ocr_pdf, is_encrypted_pdf
 
 
 def is_pdf_file(f_name) -> bool:
