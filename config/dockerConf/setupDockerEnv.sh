@@ -42,16 +42,16 @@ cd ../../ || { echo "Failed to change directory"; exit 1; }
 
 # Build the Docker container
 echo "Building the Docker container..."
-docker build -f config/dockerConf/Dockerfile --no-cache -t $IMAGE_NAME . || { echo "Docker build failed"; exit 1; }
+docker build -t $IMAGE_NAME --no-cache . || { echo "Docker build failed"; exit 1; }
 echo "Build complete."
 
 # Start container
-echo "Starting Container on port: $PORT..."
-docker run -it -p $PORT:$PORT $IMAGE_NAME 2>&1 | awk '/Or copy and paste one of these URLs:/{exit}1' # Stop logging once links have been provided
+# echo "Starting Container on port: $PORT..."
+# docker run -it -p $PORT:$PORT $IMAGE_NAME 2>&1 | awk '/Or copy and paste one of these URLs:/{exit}1' # Stop logging once links have been provided
 
-echo "
+# echo "
 
-Server is still running
-logs have been stopped to prevent flooding
-enter \"docker ps\" to capture container ID
-\"docker stop <CONTAINER_ID>\", to kill container" #TODO: Add easy ability to kill
+# Server is still running
+# logs have been stopped to prevent flooding
+# enter \"docker ps\" to capture container ID
+# \"docker stop <CONTAINER_ID>\", to kill container" #TODO: Add easy ability to kill
