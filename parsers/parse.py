@@ -7,6 +7,8 @@ from datetime import datetime
 import multiprocessing
 from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
 
+from parsers.reference_extraction.add_reference_list import add_ref_list
+
 
 def write(out_dir="./", ex_dict={}):
     outname = Path(ex_dict["filename"]).stem + ".json"
@@ -41,6 +43,21 @@ def parse(
         if not str(f_name).endswith(".pdf"):
             f_name = coerce_file_to_pdf(f_name)
             doc_dict["filename"] = re.sub(r"\.[^.]+$", ".pdf", doc_dict["filename"])
+
+
+        # TODO add way to flag these features individually
+        funcs = [
+            add_ref_list,
+            # entities.extract_entities,
+            # topics.extract_topics,
+            # keywords.add_keyw_5,
+            # abbreviations.add_abbreviations_n,
+            # summary.add_summary,
+            # add_pagerank_r,
+            # add_popscore_r,
+            # text_length.add_word_count,
+            # add_sections,
+        ]
 
         doc_obj = get_fitz_doc_obj(f_name)
         handle_pages(doc_obj, doc_dict)
