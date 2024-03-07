@@ -1,7 +1,7 @@
 # Getting Started
 
 # Docker Set Up
-Follow `config/dockerConf/README.md` \
+Follow `config/dockerConf/README.md`
 
 
 # TODO:
