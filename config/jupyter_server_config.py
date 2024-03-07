@@ -463,7 +463,7 @@ c.ServerApp.ip = '0.0.0.0'
 ## DEPRECATED in 2.0. Use PasswordIdentityProvider.hashed_password
 #  Default: ''
 # c.ServerApp.password = ''
-c.PasswordIdentityProvider.hashed_password = "argon2:$argon2id$v=19$m=10240,t=10,p=8$SMJcvzcYcfdOz6v5VYTH0g$1JHgSvhE3aVobSfsZ2VqpOtGDrxY7sqKSqJw4sq97+0"
+c.PasswordIdentityProvider.hashed_password = "argon2:$argon2id$v=19$m=10240,t=10,p=8$SMJcvzcYcfdOz6v5VYTH0g$1JHgSvhE3aVobSfsZ2VqpOtGDrxY7sqKSqJw4sq97+0" # gamechanger hashed
 
 ## DEPRECATED in 2.0. Use PasswordIdentityProvider.password_required
 #  Default: False
