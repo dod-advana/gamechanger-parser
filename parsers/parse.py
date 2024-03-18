@@ -7,7 +7,8 @@ from datetime import datetime
 import multiprocessing
 from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
 
-from parsers.reference_extraction.add_reference_list import add_ref_list
+# from parsers.reference_extraction.add_reference_list import add_ref_list
+# from parsers.entity_extraction.entities import extract_entities
 
 
 def write(out_dir="./", ex_dict={}):
@@ -47,8 +48,8 @@ def parse(
 
         # TODO add way to flag these features individually
         funcs = [
-            add_ref_list,
-            # entities.extract_entities,
+            # add_ref_list,
+            # extract_entities,
             # topics.extract_topics,
             # keywords.add_keyw_5,
             # abbreviations.add_abbreviations_n,

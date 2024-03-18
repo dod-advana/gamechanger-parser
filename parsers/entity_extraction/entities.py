@@ -1,31 +1,25 @@
-from os.path import join
 from collections import Counter
-from itertools import chain
+
 from flashtext import KeywordProcessor
 
-from gamechangerml import DATA_PATH
-from gamechangerml.src.utilities.text_utils import simple_clean
-
-from common.document_parser.lib.document import Document, FieldNames
-from common.document_parser.lib.entities_utils import (
-    remove_overlapping_ents,
-    replace_nonalpha_chars,
-    make_entities_lookup_dict,
-)
+from parsers.field_names import FieldNames
+from parsers.utils import text_utils
+from parsers.entity_extraction import entities_utils
+from parsers.static_data.data_paths import path_for_GraphRelations_xls
 
 
 # The graph relations file from gamechangerml is used as gold standard entities.
-ENTITIES_LOOKUP_DICT = make_entities_lookup_dict(
-    join(DATA_PATH, "features/GraphRelations.xls")
+graph_relations_entities_dict = entities_utils.make_entities_lookup_dict(
+    path_for_GraphRelations_xls
 )
 
-# Used to find entities in text.
-PROCESSOR = KeywordProcessor(case_sensitive=True)
-for ent in ENTITIES_LOOKUP_DICT.keys():
-    PROCESSOR.add_keyword(ent)
+# # Used to find entities in text.
+flashtext_processor = KeywordProcessor(case_sensitive=True)
+for entity in graph_relations_entities_dict.keys():
+    flashtext_processor.add_keyword(entity)
 
-# Used to rename entity types from how they exist in the graph relations file
-# to how they will exist in document dictionaries.
+# # Used to rename entity types from how they exist in the graph relations file
+# # to how they will exist in document dictionaries.
 ENTITY_RENAME_DICT = {
     "ORG": "ORG_s",
     "GPE": "GPE_s",
@@ -36,7 +30,7 @@ ENTITY_RENAME_DICT = {
 }
 
 
-def extract_entities(doc_dict):
+def extract_entities(doc_dict: dict) -> None:
     """Extract entities from a document's text.
 
     Utilizes GraphRelations.xls from gamechangerml as gold standard entities.
@@ -68,52 +62,58 @@ def extract_entities(doc_dict):
     Returns:
         dict: The updated document dictionary
     """
-    doc = Document(doc_dict)
-    paragraphs = doc.get_field(FieldNames.PARAGRAPHS)
-    all_ents = []
+    paragraphs = doc_dict[FieldNames.PARAGRAPHS]
 
-    for par in paragraphs:
-        ents_by_type = dict(
-            zip(
-                list(ENTITY_RENAME_DICT.values()),
-                [set() for _ in range(len(ENTITY_RENAME_DICT))],
-            )
-        )
+    all_document_entities = []
 
-        text = par.get(FieldNames.PAR_RAW_TEXT)
+    for paragraph_dict in paragraphs:
+
+        # use set to avoid adding duplicates
+        entities_by_type = {new_name: set() for new_name in ENTITY_RENAME_DICT.values()}
+
+        text = paragraph_dict[FieldNames.PAR_RAW_TEXT]
         if text is None:
-            par[FieldNames.ENTITIES] = ents_by_type
+            paragraph_dict[FieldNames.ENTITIES] = entities_by_type
             continue
-        text = simple_clean(text)
+
+        text = text_utils.simple_clean(text)
         # Remove non-alphanumeric characters in the paragraph's text since we
         # search for entities using the keys of ENTITIES_LOOKUP_DICT which also
         # have non-alphanumeric characters removed.
-        text = replace_nonalpha_chars(text, "")
+        text = entities_utils.replace_nonalpha_chars(text, "")
 
         # The flashtext KeywordProcessor (inspired by the Aho-Corasick
         # algorithm and Trie data structure) is MUCH faster than re.finditer()
         # in this case.
-        ents = [
-            (
-                e[1],
-                e[2],
-                ENTITIES_LOOKUP_DICT[e[0]]["raw_ent"],
-                ENTITIES_LOOKUP_DICT[e[0]]["ent_type"],
+        extracted_keywords = flashtext_processor.extract_keywords(text, span_info=True)
+
+        entities = []
+        for keyword, span_start, span_stop in extracted_keywords:
+            raw_entity_for_keyword = graph_relations_entities_dict[keyword]["raw_ent"]
+            entity_type = graph_relations_entities_dict[keyword]["ent_type"]
+            entities.append(
+                (span_start, span_stop, raw_entity_for_keyword, entity_type)
             )
-            for e in PROCESSOR.extract_keywords(text, span_info=True)
-        ]
-        ents = remove_overlapping_ents(ents)
-        for ent in ents:
-            ents_by_type[ENTITY_RENAME_DICT[ent[3]]].add(ent[2])
-        ents_by_type = {k: list(v) for k, v in ents_by_type.items()}
 
-        doc.set_paragraph_entities(par, ents_by_type)
-        all_ents += list(chain.from_iterable(ents_by_type.values()))
+        entities = entities_utils.remove_overlapping(entities)
+        for span_start, span_stop, raw_entity, entity_type in entities:
+            entity_type_renamed = ENTITY_RENAME_DICT[entity_type]
+            entities_by_type[entity_type_renamed].add(raw_entity)
 
-    doc.set_field(FieldNames.ENTITIES, (list(set(all_ents))))
-    doc.set_field(
-        FieldNames.TOP_ENTITIES,
-        ([ent[0] for ent in Counter(all_ents).most_common(5)]),
-    )
+        # convert sets of entities into a list
+        entities_by_type = {k: list(v) for k, v in entities_by_type.items()}
 
-    return doc.doc_dict
+        paragraph_dict[FieldNames.ENTITIES] = entities_by_type
+
+        # add all entities found for each type to all document entities
+        for entity_list in entities_by_type.values():
+            all_document_entities += entity_list
+
+    all_unique_entities = list(set(all_document_entities))
+    doc_dict[FieldNames.ENTITIES] = all_unique_entities
+
+    # list of tuple of (key, count) for 5 most common found
+    top_counts = Counter(all_document_entities).most_common(5)
+    most_common_entities = [entity for (entity, _) in top_counts]
+
+    doc_dict[FieldNames.TOP_ENTITIES] = most_common_entities
