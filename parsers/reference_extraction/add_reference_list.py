@@ -1,5 +1,7 @@
 import re
 import typing as t
+
+from parsers.field_names import FieldNames as FN
 from parsers.reference_extraction.reference_regexes import get_reference_regex_dict
 
 
@@ -64,7 +66,7 @@ def preprocess_text(text: str) -> str:
 
 def add_ref_list(doc_dict: dict) -> None:
 
-    preprocessed_text = preprocess_text(doc_dict["text"])
+    preprocessed_text = preprocess_text(doc_dict[FN.TEXT])
     found_references_accumulator = set()
 
     for doc_type_prefix, reference_finding_pattern in reference_regex_dict.items():
@@ -75,4 +77,5 @@ def add_ref_list(doc_dict: dict) -> None:
             doc_type_prefix,
         )
 
-    doc_dict["ref_list"] = list(found_references_accumulator)
+    doc_dict[FN.REF_LIST] = list(found_references_accumulator)
+    print('ref list', doc_dict[FN.REF_LIST])

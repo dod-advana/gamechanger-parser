@@ -1,8 +1,15 @@
+from parsers.reading_in import read_plain_text
+from parsers.html_utils import (
+    convert_html_file_to_pdf,
+    convert_html_to_pdf,
+    convert_text_to_html,
+)
 import typing as t
 from pathlib import Path
 import fitz
 import os
 import PyPDF2
+# from PyPDF2.errors import PdfReadError
 from PyPDF2.utils import PdfReadError
 
 
@@ -68,7 +75,8 @@ def is_ocr_pdf(file: t.Union[Path, str], error_char_threshold=0.2) -> bool:
 def check_ocr_status_job_type(file: t.Union[Path, str], error_char_threshold=0.2):
     """Check if given pdf file is OCR'ed"""
     file_path = Path(file).resolve()
-    bad_page_nums = ""  # the page number (index + 1) of pages that need to be OCRed
+    # the page number (index + 1) of pages that need to be OCRed
+    bad_page_nums = ""
     try:
         with fitz.open(str(file_path)) as doc:
             total_pages = doc.pageCount
@@ -121,14 +129,6 @@ def is_encrypted_pdf(file: t.Union[Path, str]) -> bool:
         print(f"Unexpected error while trying to open {file_path.name}")
         print(e)
         return True  # err on a side of caution
-
-
-from parsers.html_utils import (
-    convert_html_file_to_pdf,
-    convert_html_to_pdf,
-    convert_text_to_html,
-)
-from parsers.reading_in import read_plain_text
 
 
 def coerce_file_to_pdf(filepath: t.Union[Path, str]) -> str:

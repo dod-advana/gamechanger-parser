@@ -7,10 +7,12 @@ class FieldNames:
     DOC_NUM = "doc_num"
     ID = "id"
     TYPE = "type"
+    PARAGRAPH_TYPE = "paragraph"
 
     TEXT = "text"  # Text of the entire document.
 
     PAGES = "pages"
+    PAGE_TEXT_CLEAN = "p_text"  # utf-8 & cleaned text of a page
     PAGE_RAW_TEXT = "p_raw_text"  # Raw text of a page.
 
     PARAGRAPHS = "paragraphs"
@@ -23,6 +25,8 @@ class FieldNames:
 
     ENTITIES = "entities"
     TOP_ENTITIES = "top_entities_t"
+
+    REF_LIST = "ref_list"
 
     SECTIONS = "sections"
     ALL_SECTIONS = "all_sections"

@@ -2,7 +2,7 @@ from collections import Counter
 
 from flashtext import KeywordProcessor
 
-from parsers.field_names import FieldNames
+from parsers.field_names import FieldNames as FN
 from parsers.utils import text_utils
 from parsers.entity_extraction import entities_utils
 from parsers.static_data.data_paths import path_for_GraphRelations_xls
@@ -62,7 +62,7 @@ def extract_entities(doc_dict: dict) -> None:
     Returns:
         dict: The updated document dictionary
     """
-    paragraphs = doc_dict[FieldNames.PARAGRAPHS]
+    paragraphs = doc_dict[FN.PARAGRAPHS]
 
     all_document_entities = []
 
@@ -71,9 +71,9 @@ def extract_entities(doc_dict: dict) -> None:
         # use set to avoid adding duplicates
         entities_by_type = {new_name: set() for new_name in ENTITY_RENAME_DICT.values()}
 
-        text = paragraph_dict[FieldNames.PAR_RAW_TEXT]
+        text = paragraph_dict[FN.PAR_RAW_TEXT]
         if text is None:
-            paragraph_dict[FieldNames.ENTITIES] = entities_by_type
+            paragraph_dict[FN.ENTITIES] = entities_by_type
             continue
 
         text = text_utils.simple_clean(text)
@@ -103,17 +103,18 @@ def extract_entities(doc_dict: dict) -> None:
         # convert sets of entities into a list
         entities_by_type = {k: list(v) for k, v in entities_by_type.items()}
 
-        paragraph_dict[FieldNames.ENTITIES] = entities_by_type
+        paragraph_dict[FN.ENTITIES] = entities_by_type
 
         # add all entities found for each type to all document entities
         for entity_list in entities_by_type.values():
             all_document_entities += entity_list
 
     all_unique_entities = list(set(all_document_entities))
-    doc_dict[FieldNames.ENTITIES] = all_unique_entities
+    doc_dict[FN.ENTITIES] = all_unique_entities
 
     # list of tuple of (key, count) for 5 most common found
     top_counts = Counter(all_document_entities).most_common(5)
     most_common_entities = [entity for (entity, _) in top_counts]
 
-    doc_dict[FieldNames.TOP_ENTITIES] = most_common_entities
+    doc_dict[FN.TOP_ENTITIES] = most_common_entities
+    print("entities", doc_dict[FN.TOP_ENTITIES])
