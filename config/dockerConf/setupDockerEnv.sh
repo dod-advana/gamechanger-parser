@@ -23,6 +23,14 @@ CONTAINER_NAME=gc-parser
 IMAGE_NAME=gc-parser
 PORT=8888
 
+echo "Docker Set Up Starting..."
+
+# Remove the image if it exists
+if docker images -a | grep -q $IMAGE_NAME; then
+    echo "Removing existing image..."
+    docker rmi -f $IMAGE_NAME || { echo "Failed to remove image"; exit 1; }
+fi
+
 # Stop and remove the container if it's running
 if docker ps -a | grep -q $CONTAINER_NAME; then
     echo "Stopping running container..."
@@ -31,27 +39,10 @@ if docker ps -a | grep -q $CONTAINER_NAME; then
     docker rm $CONTAINER_NAME || { echo "Failed to remove container"; exit 1; }
 fi
 
-# Remove the image if it exists
-if docker images -a | grep -q $IMAGE_NAME; then
-    echo "Removing existing image..."
-    docker rmi -f $IMAGE_NAME || { echo "Failed to remove image"; exit 1; }
-fi
-
 # cd to app's root
 cd ../../ || { echo "Failed to change directory"; exit 1; }
 
 # Build the Docker container
 echo "Building the Docker container..."
-docker build -t $IMAGE_NAME --no-cache . || { echo "Docker build failed"; exit 1; }
+docker build --no-cache -t $IMAGE_NAME . || { echo "Docker build failed"; exit 1; }
 echo "Build complete."
-
-# Start container
-# echo "Starting Container on port: $PORT..."
-# docker run -it -p $PORT:$PORT $IMAGE_NAME 2>&1 | awk '/Or copy and paste one of these URLs:/{exit}1' # Stop logging once links have been provided
-
-# echo "
-
-# Server is still running
-# logs have been stopped to prevent flooding
-# enter \"docker ps\" to capture container ID
-# \"docker stop <CONTAINER_ID>\", to kill container" #TODO: Add easy ability to kill
