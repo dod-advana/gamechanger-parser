@@ -8,13 +8,15 @@ import multiprocessing
 
 from parsers.field_names import FieldNames as FN
 from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
-from parsers.reference_extraction.add_reference_list import add_ref_list
-from parsers.entity_extraction.entities import extract_entities
-from parsers.paragraphs import add_paragraphs
-from parsers.pages import handle_pages
-from parsers.pdf_reader import get_fitz_doc_obj
+from parsers import paragraphs
+from parsers import pages
+from parsers import pdf_reader
 from parsers.file_utils import coerce_file_to_pdf
 from parsers.ocr import get_ocr_filename
+
+from parsers.reference_extraction.add_reference_list import add_ref_list
+from parsers.entity_extraction.entities import extract_entities
+from parsers.keyword_extraction.keywords import extract_keywords
 
 
 def write(out_dir="./", ex_dict={}):
@@ -39,18 +41,18 @@ def parse(
     print("running policy_analyics.parse on", f_name)
     try:
         doc_dict = {FN.FILENAME: f_name.name}
+
         if ocr_missing_doc or force_ocr:
             f_name = get_ocr_filename(f_name, num_ocr_threads, force_ocr)
         if not str(f_name).endswith(".pdf"):
             f_name = coerce_file_to_pdf(f_name)
-            doc_dict[FN.FILENAME] = re.sub(
-                r"\.[^.]+$", ".pdf", doc_dict[FN.FILENAME])
+            doc_dict[FN.FILENAME] = re.sub(r"\.[^.]+$", ".pdf", doc_dict[FN.FILENAME])
 
-        doc_obj = get_fitz_doc_obj(f_name)
-        handle_pages(doc_obj, doc_dict)
+        doc_obj = pdf_reader.get_fitz_doc_obj(f_name)
+        pages.handle_pages(doc_obj, doc_dict)
         doc_obj.close()
 
-        add_paragraphs(doc_dict)
+        paragraphs.add_paragraphs(doc_dict)
 
         # TODO add way to flag these features individually
         # funcs = [
@@ -67,7 +69,11 @@ def parse(
         # ]
 
         add_ref_list(doc_dict)
+        print("ref list", doc_dict[FN.REF_LIST])
         extract_entities(doc_dict)
+        print("entities", doc_dict[FN.TOP_ENTITIES])
+        extract_keywords(doc_dict)
+        print("keywords", doc_dict["keyw_5"])
 
         # print(doc_dict)
 
@@ -197,7 +203,7 @@ def process_dir(
         ocr_missing_doc: OCR non-ocr'ed docs in place
         num_ocr_threads: Number of threads used for OCR (per doc)
     """
-    print('dir path', dir_path)
+    print("dir path", dir_path)
     p = Path(dir_path).glob("**/*")
     files = [
         x
@@ -214,7 +220,7 @@ def process_dir(
             )
         )
     ]
-    print('files', files)
+    print("files", files)
     data_inputs = [
         (f_name, out_dir, ocr_missing_doc, num_ocr_threads, force_ocr)
         for f_name in files
@@ -229,11 +235,9 @@ def process_dir(
     if multiprocess != -1:
         # begin = time.time()
         if multiprocess == 0:
-            pool = multiprocessing.Pool(
-                processes=os.cpu_count(), maxtasksperchild=1)
+            pool = multiprocessing.Pool(processes=os.cpu_count(), maxtasksperchild=1)
         else:
-            pool = multiprocessing.Pool(
-                processes=int(multiprocess), maxtasksperchild=1)
+            pool = multiprocessing.Pool(processes=int(multiprocess), maxtasksperchild=1)
         print("Processing pool: %s", str(pool))
 
         if ocr_missing_doc:
@@ -245,7 +249,7 @@ def process_dir(
             # How many elements each list should have # work around with issue on queue being over filled
             # using list comprehension
             process_list = [
-                data_inputs[i * batch_size: (i + 1) * batch_size]
+                data_inputs[i * batch_size : (i + 1) * batch_size]
                 for i in range((len(data_inputs) + batch_size - 1) // batch_size)
             ]
 

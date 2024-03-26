@@ -131,11 +131,11 @@
             "par_raw_text_t": "2 .   APPLICABILITY  \n2.1 .   This  Directive  applies  to  the  Office  of  the  Secretary  of  Defense ,  the  Military  \nDepartments ,  the  Organization  of  the  Joint  Chiefs  of  Staff ,  the  Unified  and  Specified  Commands ,  \nand  the  Defense  Agencies  ( hereafter  referred  to  collectively  as  \" DoD  Components \" ) .  \n2.2 .   This  Directive  does  not  regulate  the  procurement  or  use  of  copyrighted  works  for  \nauthorized  official  purposes .",
             "entities": {
                 "ORG_s": [
-                    "Office of the Secretary of Defense",
-                    "DoD Component",
+                    "Military Departments",
                     "Organization of the Joint Chiefs of Staff",
                     "Department of Defense Defense Agencies",
-                    "Military Departments"
+                    "DoD Component",
+                    "Office of the Secretary of Defense"
                 ],
                 "GPE_s": [],
                 "NORP_s": [],
@@ -190,8 +190,8 @@
             "par_raw_text_t": "2  \n3.2 .   Although  the  policy  expressed  in  this  Directive  takes  into  account  the  copyright  law  of  \nthe  United  States ,  the  application  of  that  law  to  specific  situations  is  a  matter  for  interpretation  by  \nthe  U.S .  Copyright  Office  and  the  Department  of  Justice .",
             "entities": {
                 "ORG_s": [
-                    "Copyright Office",
-                    "United States"
+                    "United States",
+                    "Copyright Office"
                 ],
                 "GPE_s": [],
                 "NORP_s": [],
@@ -328,22 +328,30 @@
         "DoDD 5535.4"
     ],
     "entities": [
-        "Office of the Secretary of Defense",
-        "DoD Component",
+        "Military Departments",
         "United States",
         "DoD",
         "Organization of the Joint Chiefs of Staff",
-        "General Counsel of the Department of Defense",
+        "Department of Defense Defense Agencies",
         "United States Department of Defense",
         "Copyright Office",
-        "Department of Defense Defense Agencies",
-        "Military Departments"
+        "DoD Component",
+        "General Counsel of the Department of Defense",
+        "Office of the Secretary of Defense"
     ],
     "top_entities_t": [
         "DoD Component",
         "United States Department of Defense",
         "General Counsel of the Department of Defense",
-        "Office of the Secretary of Defense",
+        "Military Departments",
         "Organization of the Joint Chiefs of Staff"
+    ],
+    "keyw_5": [
+        "video recordings",
+        "defense agencies",
+        "dod components",
+        "procedures permission",
+        "effective immediatel",
+        "dodd 4"
     ]
 }

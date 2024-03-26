@@ -174,8 +174,8 @@
                 "LAW_s": [],
                 "LOC_s": [],
                 "PERSON_s": [
-                    "CJCS",
-                    "Chairman of the Joint Chiefs of Staff"
+                    "Chairman of the Joint Chiefs of Staff",
+                    "CJCS"
                 ]
             }
         },
@@ -211,8 +211,8 @@
                 "LAW_s": [],
                 "LOC_s": [],
                 "PERSON_s": [
-                    "CJCS",
-                    "Chairman of the Joint Chiefs of Staff"
+                    "Chairman of the Joint Chiefs of Staff",
+                    "CJCS"
                 ]
             }
         },
@@ -404,8 +404,8 @@
             "par_raw_text_t": "( 3 )   Annually  review  NC2  CBT  modules  against  deficiencies  and  trend  \nanalysis  noted  from  the  Joint  Staff \u2019s  Staff  Assessment  Visit  program  and  POLO  \nHAT  communications  assessment  program .   Coordinate  findings  and  areas  of  \ninterest  with  USSTRATCOM  Joint  Forces  Component  Command  \u2013  Global  Strike  \n( JFCC -GS )  to  determine  if  CBT  modules  can  help  address  any  negative  trends .   \nPrepare  an  annual  report  based  on  the  results  of  the  annual  review  and  \ndistribute  to  J -39  NOD ,  J -33  OT&E ,  and  all  other  NC2  command  centers .",
             "entities": {
                 "ORG_s": [
-                    "OT&E",
                     "USSTRATCOM",
+                    "OT&E",
                     "Joint Staff J-2"
                 ],
                 "GPE_s": [],
@@ -425,8 +425,8 @@
             "par_raw_text_t": "( 4 )   Coordinate  with  USSTRATCOM  JFCC -GS  on  any  funding  issues  that  \naffect  the  Joint  Staff \u2019s  NC2  CBT  requirements  defined  in  this  CJCSI .",
             "entities": {
                 "ORG_s": [
-                    "USSTRATCOM",
-                    "Joint Staff J-2"
+                    "Joint Staff J-2",
+                    "USSTRATCOM"
                 ],
                 "GPE_s": [],
                 "NORP_s": [],
@@ -558,8 +558,8 @@
             "par_raw_text_t": "CJCSI  3520.01C  \n1  September  2010  \n3  \n( 4 )   Submit  CBT  content  derived  from  EAP -CJCS  to  J -36  NOD  for  review  \nand  approval  prior  to  distribution .   CBT  modules  with  USSTRATCOM -unique  \nprocedures  developed  only  for  internal  USSTRATCOM  use  do  not  require  review  \nand  approval  by  the  Joint  Staff .",
             "entities": {
                 "ORG_s": [
-                    "USSTRATCOM",
-                    "Joint Staff J-2"
+                    "Joint Staff J-2",
+                    "USSTRATCOM"
                 ],
                 "GPE_s": [],
                 "NORP_s": [],
@@ -597,17 +597,17 @@
             "par_raw_text_t": "( 6 )   Following  CBT  approval ,  distribute  software  to  the  following  \norganizations ,  as  requested .  \n( a )  USCENTCOM  \n( b )  USEUCOM  \n( c )  \nUSJFCOM  \n( d )  USNORTHCOM  Special  Activities  \n( e )  \nUSPACOM  \n( f )  \nUSAFRICOM  \n( g )  USSOCOM  \n( h )  USSOUTHCOM  \n( i )  \nUSSTRATCOM  Global  Operations  Center  and  Airborne  \nCommand  Post  \n( j )  \nUSTRANSCOM  \n( k )  Nuclear  Command  and  Control  System  ( NCCS )  Support  Staff   \n( l )  \nUSAFE  Command  Center  \n( m )  COMSTRATCOMM  Wing  One  \n( n )  NAOC   \n( o )  USNORTHCOM  MCCC  \n( p )  NMCC  Operations  Teams  \n( q )  Joint  Staff/J -36  NOD   \n( r )  \nNMCC  Site -R  ",
             "entities": {
                 "ORG_s": [
-                    "USNORTHCOM",
-                    "Joint Staff J-2",
+                    "USAFRICOM",
                     "USSOCOM",
-                    "USTRANSCOM",
+                    "USAFE",
+                    "USCENTCOM",
+                    "Joint Staff J-2",
+                    "USNORTHCOM",
+                    "USEUCOM",
                     "USPACOM",
                     "USSTRATCOM",
-                    "USAFRICOM",
-                    "USAFE",
-                    "USEUCOM",
                     "USSOUTHCOM",
-                    "USCENTCOM"
+                    "USTRANSCOM"
                 ],
                 "GPE_s": [],
                 "NORP_s": [],
@@ -905,10 +905,10 @@
                 "LAW_s": [],
                 "LOC_s": [],
                 "PERSON_s": [
+                    "SecDef",
                     "Secretary of Defense",
-                    "CJCS",
                     "Combatant Commander",
-                    "SecDef"
+                    "CJCS"
                 ]
             }
         },
@@ -1000,33 +1000,33 @@
     ],
     "ref_list": [
         "CJCSI 3520.01C",
-        "CJCSI 6810.04",
-        "CJCSI 3520.01B",
         "CJCSM 3500.04",
-        "CJCSI J-3"
+        "CJCSI J-3",
+        "CJCSI 6810.04",
+        "CJCSI 3520.01B"
     ],
     "entities": [
-        "Director, Joint Staff",
+        "Joint Staff J-2",
         "USSOCOM",
-        "Chairman of the Joint Chiefs of Staff",
-        "USTRANSCOM",
-        "SecDef",
         "Unified Combatant Commands",
+        "Secretary of Defense",
+        "CJCS",
+        "USPACOM",
+        "SecDef",
+        "USSOUTHCOM",
         "USCENTCOM",
         "JS",
-        "Joint Staff J-2",
-        "DoD",
         "OT&E",
-        "Combatant Commander",
+        "USTRANSCOM",
+        "Director, Joint Staff",
+        "DoD",
+        "USAFRICOM",
+        "Chairman of the Joint Chiefs of Staff",
         "USAFE",
-        "CJCS",
+        "USNORTHCOM",
         "USEUCOM",
         "USSTRATCOM",
-        "USAFRICOM",
-        "USNORTHCOM",
-        "USPACOM",
-        "Secretary of Defense",
-        "USSOUTHCOM"
+        "Combatant Commander"
     ],
     "top_entities_t": [
         "Joint Staff J-2",
@@ -1034,5 +1034,17 @@
         "USSTRATCOM",
         "Chairman of the Joint Chiefs of Staff",
         "JS"
+    ],
+    "keyw_5": [
+        "joint staff",
+        "nc2 responsibilities",
+        "cbt modules",
+        "annual review",
+        "cbt approval",
+        "internal usstratcom",
+        "task applicability",
+        "attack assessment",
+        "nuclear command",
+        "issue presidential"
     ]
 }
