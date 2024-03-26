@@ -35,8 +35,10 @@ Steps have been tested and designed using bash
 
 Modify `./setupDockerEnv.sh` to adjust default values.
 
-#Run 
+## Run 
 `./setupDockerEnv.sh` to download required dependencies and map the container's port to `PORT` value.
+
+`./start.sh` to start container
 
 After container and image setup, a log will provide access URLs:
 
