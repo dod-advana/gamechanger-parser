@@ -1,6 +1,6 @@
 # Configuration file for jupyter-server.
 
-c = get_config()  #noqa
+c = get_config() # type: ignore  #noqa 
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
