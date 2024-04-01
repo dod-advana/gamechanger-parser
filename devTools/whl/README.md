@@ -8,21 +8,16 @@
 3) Upload to s3
 
 ## Whl tester
-```python -m venv venv```
-```source venv/Scripts/activate```
 
-```
-shell
-pip install –upgrade pip
-pip install setuptools
-tar -xzvf setuptools-60.5.0.tar.gz
-cd setuptools-60.5.0
-python3 setup.py install
+Databricks is using 3.8.10 as of 1 Apr 2024
+https://www.python.org/downloads/release/python-3810/
 
-```
+```py -m venv dbksVenv```
+```source dbksVenv/Scripts/activate```
+```pip install --upgrade pip```
 
 <!-- TODO: Test .whl -->
-```pip install ./whl_creation_output/dist/gc_parser_2024_03_25T15_46-1.0.0-py3-none-any.whl```
+```pip install ./whl_creation_output/dist/[file-name].whl```
 
 ## Common Errors
 

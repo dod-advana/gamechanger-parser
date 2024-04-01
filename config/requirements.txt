@@ -13,7 +13,7 @@ lxml==4.9.4
 ocrmypdf==11.3.2
 packaging==23.2
 pdfminer.six==20201018
-pikepdf==8.13.0
+pikepdf==2.0.0
 pillow==10.2.0
 pluggy==0.13.1
 pycparser==2.21

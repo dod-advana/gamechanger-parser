@@ -14,12 +14,15 @@ timeNow = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M')
 with open(requirements_path) as f:
     required = f.read().splitlines()
 
-# Move the build artifacts to a target dir
+# # # # #
+# Purpose : Move the build artifacts to a target dir
+# To consolidate setup output files
+# # # # #
 def move_build_artifcats(target_dir, base_dir):
     # Create the target dir if it does not exist
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-
+        
     # Paths for the artifacts
     dist_dir = os.path.join(base_dir, 'devTools', 'whl', 'dist')
     build_dir = os.path.join(base_dir, 'devTools', 'whl', 'build')
