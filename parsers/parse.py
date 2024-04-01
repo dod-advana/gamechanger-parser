@@ -5,7 +5,18 @@ import json
 import typing
 from datetime import datetime
 import multiprocessing
+
+from parsers.field_names import FieldNames as FN
 from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
+from parsers import paragraphs
+from parsers import pages
+from parsers import pdf_reader
+from parsers.file_utils import coerce_file_to_pdf
+from parsers.ocr import get_ocr_filename
+
+from parsers.reference_extraction.add_reference_list import add_ref_list
+from parsers.entity_extraction.entities import extract_entities
+from parsers.keyword_extraction.keywords import extract_keywords
 
 
 def write(out_dir="./", ex_dict={}):
@@ -20,12 +31,6 @@ def write(out_dir="./", ex_dict={}):
     return True
 
 
-from parsers.pages import handle_pages
-from parsers.pdf_reader import get_fitz_doc_obj
-from parsers.file_utils import coerce_file_to_pdf
-from parsers.ocr import get_ocr_filename
-
-
 def parse(
     f_name,
     ocr_missing_doc=False,
@@ -35,16 +40,42 @@ def parse(
 ):
     print("running policy_analyics.parse on", f_name)
     try:
-        doc_dict = {"filename": f_name.name}
+        doc_dict = {FN.FILENAME: f_name.name}
+
         if ocr_missing_doc or force_ocr:
             f_name = get_ocr_filename(f_name, num_ocr_threads, force_ocr)
         if not str(f_name).endswith(".pdf"):
             f_name = coerce_file_to_pdf(f_name)
-            doc_dict["filename"] = re.sub(r"\.[^.]+$", ".pdf", doc_dict["filename"])
+            doc_dict[FN.FILENAME] = re.sub(r"\.[^.]+$", ".pdf", doc_dict[FN.FILENAME])
 
-        doc_obj = get_fitz_doc_obj(f_name)
-        handle_pages(doc_obj, doc_dict)
+        doc_obj = pdf_reader.get_fitz_doc_obj(f_name)
+        pages.handle_pages(doc_obj, doc_dict)
         doc_obj.close()
+
+        paragraphs.add_paragraphs(doc_dict)
+
+        # TODO add way to flag these features individually
+        # funcs = [
+        #     add_ref_list,
+        #     extract_entities,
+        #     # topics.extract_topics,
+        #     # keywords.add_keyw_5,
+        #     # abbreviations.add_abbreviations_n,
+        #     # summary.add_summary,
+        #     # add_pagerank_r,
+        #     # add_popscore_r,
+        #     # text_length.add_word_count,
+        #     # add_sections,
+        # ]
+
+        add_ref_list(doc_dict)
+        print("ref list", doc_dict[FN.REF_LIST])
+        extract_entities(doc_dict)
+        print("entities", doc_dict[FN.TOP_ENTITIES])
+        extract_keywords(doc_dict)
+        print("keywords", doc_dict["keyw_5"])
+
+        # print(doc_dict)
 
         write(out_dir=out_dir, ex_dict=doc_dict)
     except Exception as e:
@@ -172,7 +203,7 @@ def process_dir(
         ocr_missing_doc: OCR non-ocr'ed docs in place
         num_ocr_threads: Number of threads used for OCR (per doc)
     """
-
+    print("dir path", dir_path)
     p = Path(dir_path).glob("**/*")
     files = [
         x
@@ -189,6 +220,7 @@ def process_dir(
             )
         )
     ]
+    print("files", files)
     data_inputs = [
         (f_name, out_dir, ocr_missing_doc, num_ocr_threads, force_ocr)
         for f_name in files
