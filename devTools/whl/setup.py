@@ -51,10 +51,9 @@ setup(
     description='gc-parser main branch',
     url='https://github.com/dod-advana/gamechanger-parser',
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.8.10",
     ],
 )
-# After exe consolidate files
+# After exe, consolidate files
 output_dir = os.path.join(base_dir, 'devTools', 'whl', 'whl_creation_output')
 move_build_artifcats(output_dir, base_dir)
