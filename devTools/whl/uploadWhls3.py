@@ -53,3 +53,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# TODO: Ask if you want to upload to s3 : y/n
