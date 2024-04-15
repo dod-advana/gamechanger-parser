@@ -1,22 +1,30 @@
+import sys
 import os
 import re
 from pathlib import Path
 import json
 import typing
 from datetime import datetime
-import multiprocessing
+import traceback
+
+from parsers import paragraphs, pages, pdf_reader
 
 from parsers.field_names import FieldNames as FN
 from parsers.ocr_utils import OCRError, UnparseableDocument, PageCountParse
-from parsers import paragraphs
-from parsers import pages
-from parsers import pdf_reader
 from parsers.file_utils import coerce_file_to_pdf
 from parsers.ocr import get_ocr_filename
-
 from parsers.reference_extraction.add_reference_list import add_ref_list
 from parsers.entity_extraction.entities import extract_entities
 from parsers.keyword_extraction.keywords import extract_keywords
+from parsers.ranking.rank import add_pagerank, add_popscore
+from parsers.topic_extraction.topics import extract_topics
+from parsers.post_process import post_process
+from parsers.init_doc import (
+    assign_f_name_fields,
+    assign_other_fields,
+    add_metadata_fields,
+)
+from parsers.section_parse import add_sections
 
 
 def write(out_dir="./", ex_dict={}):
@@ -33,17 +41,17 @@ def write(out_dir="./", ex_dict={}):
 
 def parse(
     f_name,
-    ocr_missing_doc=False,
-    num_ocr_threads=2,
-    force_ocr=False,
-    out_dir="./",
+    out_dir,
 ):
     print("running policy_analyics.parse on", f_name)
     try:
-        doc_dict = {FN.FILENAME: f_name.name}
+        meta_dict = {}
+        doc_dict = {}
 
-        if ocr_missing_doc or force_ocr:
-            f_name = get_ocr_filename(f_name, num_ocr_threads, force_ocr)
+        add_metadata_fields(doc_dict, meta_dict)
+        assign_f_name_fields(f_name, doc_dict)
+        assign_other_fields(doc_dict)
+
         if not str(f_name).endswith(".pdf"):
             f_name = coerce_file_to_pdf(f_name)
             doc_dict[FN.FILENAME] = re.sub(r"\.[^.]+$", ".pdf", doc_dict[FN.FILENAME])
@@ -54,272 +62,93 @@ def parse(
 
         paragraphs.add_paragraphs(doc_dict)
 
-        # TODO add way to flag these features individually
-        # funcs = [
-        #     add_ref_list,
-        #     extract_entities,
-        #     # topics.extract_topics,
-        #     # keywords.add_keyw_5,
-        #     # abbreviations.add_abbreviations_n,
-        #     # summary.add_summary,
-        #     # add_pagerank_r,
-        #     # add_popscore_r,
-        #     # text_length.add_word_count,
-        #     # add_sections,
-        # ]
+        ## text extracted, start extra steps
 
         add_ref_list(doc_dict)
         print("ref list", doc_dict[FN.REF_LIST])
+
         extract_entities(doc_dict)
         print("entities", doc_dict[FN.TOP_ENTITIES])
+
+        extract_topics(doc_dict)
+        print("topics", doc_dict["topics_s"])
+
         extract_keywords(doc_dict)
         print("keywords", doc_dict["keyw_5"])
 
-        # print(doc_dict)
+        doc_dict["abbreviations_n"] = []
+        # abbreviations.add_abbreviations_n, just returns empty list currently
+        doc_dict["summary_30"] = "" 
+         # summary.add_summary, just returns empty string currently
+        
+
+        add_pagerank(doc_dict)
+        print("pagerank", doc_dict["pagerank_r"])
+
+        add_popscore(doc_dict)
+        print("popularity score", doc_dict["pop_score"])
+
+        # word count - should this really be abstracted?
+        doc_dict["word_count"] = len(doc_dict["text"].split(" "))
+        print("word count", doc_dict["word_count"])
+
+        # # TODO: add sections
+        add_sections(doc_dict)
+        for title, section in doc_dict["sections"].items():
+            print(title, ':', section)
+
+        post_process(doc_dict)
+
+        # process_ingest_date - connects to database
+        # crawler_info - connects to database
 
         write(out_dir=out_dir, ex_dict=doc_dict)
     except Exception as e:
-        print("ERROR in policy_analytics.parse:", e)
+        print("ERROR in policy_analytics.parse:", repr(e))
+        traceback.print_exc()
 
 
-def pdf_to_json(
+def process_directory(
     source: str,
     destination: str,
-    multiprocess: int = -1,
-    ocr_missing_doc: bool = False,
-    force_ocr: bool = False,
-    num_ocr_threads: int = 2,
-    batch_size: int = 100,
 ) -> None:
     """
     Converts input pdf file to json
     Args:
         source: A source directory to be processed.
         destination: A destination directory to be processed
-        verify: Boolean to determine if output jsons are to be verified vs a json schema
-        metadata: file path of metadata to be processed.
-        multiprocess: Multiprocessing. Will take integer for number of cores,
-        ocr_missing_doc: OCR non-OCR'ed files
-        num_ocr_threads: Number of threads to use for OCR (per file)
     """
+    if not Path(source).is_dir:
+        print("A directory of files to parse is required")
+        exit(1)
 
-    if Path(source).is_file():
-        print("Parsing Single Document")
+    print("processing files in", source)
 
-        single_process(
-            f_name,
-            out_dir,
-            ocr_missing_doc,
-            num_ocr_threads,
-            force_ocr,
-        )
+    filepath = Path(source).glob("**/*")
+    to_process = []
+    excluded = []
 
-    else:
-        process_dir(
-            dir_path=source,
-            out_dir=destination,
-            multiprocess=multiprocess,
-            ocr_missing_doc=ocr_missing_doc,
-            force_ocr=force_ocr,
-            num_ocr_threads=num_ocr_threads,
-            batch_size=batch_size,
-        )
+    for path_item in filepath:
+        if not path_item.is_file():
+            excluded.append(path_item)
+            continue
 
+        if path_item.suffix.lower() in (".pdf", ".html", ".txt"):
+            to_process.append(path_item)
+            continue
 
-def single_process(
-    f_name,
-    out_dir,
-    ocr_missing_doc: bool = False,
-    num_ocr_threads: int = 2,
-    force_ocr: bool = False,
-) -> None:
-    """
-    Args:
-        data_inputs: named tuple of kind "parser_input", the necessary data inputs
-    Returns:
-    """
+        filetype_guess = filetype.guess(str(path_item))
+        if filetype_guess is not None and filetype_guess.mime in [
+            "pdf",
+            "application/pdf",
+        ]:
+            to_process.append(path_item)
+            continue
 
-    # Logging is not safe in multiprocessing thread. Especially if its going to a file
-    # Directly printing to screen is a temporary solution here
-    m_id = multiprocessing.current_process()
+        excluded.append(path_item)
 
-    print(
-        "%s - [INFO] - Processing: %s - Filename: %s"
-        % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f'")[:-4],
-            str(m_id),
-            Path(f_name).name,
-        )
-    )
+    print(f"{len(to_process)} items to process")
+    print(f"{len(excluded)} items were excluded")
 
-    try:
-        parse(
-            f_name=f_name,
-            ocr_missing_doc=ocr_missing_doc,
-            num_ocr_threads=num_ocr_threads,
-            force_ocr=force_ocr,
-            out_dir=out_dir,
-        )
-
-    # TODO: catch this where failed files can be counted or increment shared counter (for mp)
-    except (OCRError, UnparseableDocument, PageCountParse) as e:
-        print(e)
-        print(
-            "%s - [ERROR] - Failed Processing: %s - Filename: %s"
-            % (
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f'")[:-4],
-                str(m_id),
-                Path(f_name).name,
-            )
-        )
-        return
-
-    print(
-        "%s - [INFO] - Finished Processing: %s - Filename: %s"
-        % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f'")[:-4],
-            str(m_id),
-            Path(f_name).name,
-        )
-    )
-
-
-def process_dir(
-    dir_path: str,
-    out_dir: str = "./",
-    multiprocess: int = False,
-    ocr_missing_doc: bool = False,
-    force_ocr: bool = False,
-    num_ocr_threads: int = 2,
-    batch_size: int = 100,
-):
-    """
-    Processes a directory of pdf files, returns corresponding Json files
-    Args:
-        parse_func: Parsing function called on the data
-        dir_path: A source directory to be processed.
-        out_dir: A destination directory to be processed
-        multiprocess: Multiprocessing. Will take integer for number of cores
-        ocr_missing_doc: OCR non-ocr'ed docs in place
-        num_ocr_threads: Number of threads used for OCR (per doc)
-    """
-    print("dir path", dir_path)
-    p = Path(dir_path).glob("**/*")
-    files = [
-        x
-        for x in p
-        if x.is_file()
-        and (
-            x.suffix.lower() in (".pdf", ".html", ".txt")
-            or (
-                filetype.guess(str(x)) is not None
-                and (
-                    filetype.guess(str(x)).mime == "pdf"
-                    or filetype.guess(str(x)).mime == "application/pdf"
-                )
-            )
-        )
-    ]
-    print("files", files)
-    data_inputs = [
-        (f_name, out_dir, ocr_missing_doc, num_ocr_threads, force_ocr)
-        for f_name in files
-    ]
-
-    print("Parsing Multiple Documents: %i", len(data_inputs))
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time =", current_time)
-
-    if multiprocess != -1:
-        # begin = time.time()
-        if multiprocess == 0:
-            pool = multiprocessing.Pool(processes=os.cpu_count(), maxtasksperchild=1)
-        else:
-            pool = multiprocessing.Pool(processes=int(multiprocess), maxtasksperchild=1)
-        print("Processing pool: %s", str(pool))
-
-        if ocr_missing_doc:
-            # ReOCR PDF if need (ex: page is missing)
-            start_ocr_time = datetime.now()
-            start_ocr_time_display = start_ocr_time.strftime("%H:%M:%S")
-            print("Start reOCR Time =", start_ocr_time_display)
-
-            # How many elements each list should have # work around with issue on queue being over filled
-            # using list comprehension
-            process_list = [
-                data_inputs[i * batch_size : (i + 1) * batch_size]
-                for i in range((len(data_inputs) + batch_size - 1) // batch_size)
-            ]
-
-            total_num_files = len(data_inputs)
-            reocr_count = 0
-            for item_process in tqdm(process_list):
-                with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor:
-                    results = [
-                        executor.submit(check_ocr_status_job_type, data[1])
-                        for data in item_process
-                    ]
-                    for index, fut in enumerate(
-                        concurrent.futures.as_completed(results)
-                    ):
-                        if not isinstance(fut, type(None)):
-                            if fut.result() is not None:
-                                ocrd_pdf = fut.result().get("successful_ocr")
-                                if (
-                                    is_pdf(str(item_process[index][1]))
-                                    and not ocrd_pdf
-                                    and not is_encrypted_pdf(
-                                        str(item_process[index][1])
-                                    )
-                                ):
-                                    reocr_count += 1
-                                    kwargs = {  # "deskew": True if ocr_job_type == OCRJobType.FORCE_OCR else False,
-                                        # "rotate_pages": True,
-                                        # "use_threads":True,
-                                        "bad_pages": fut.result().get("bad_page_nums")
-                                    }
-                                    try:
-                                        print(
-                                            f"[OCR] Attempt reOCR of pages {kwargs.get('bad_pages')}"
-                                        )
-                                        # TODO: This is not multi threaded -- we want to multithread and batch process!!!!!
-                                        ocr = PDFOCR(
-                                            input_file=item_process[index][1],
-                                            output_file=item_process[index][1],
-                                            ocr_job_type=fut.result().get(
-                                                "ocr_job_type"
-                                            ),
-                                            ignore_init_errors=True,
-                                            num_threads=num_ocr_threads,  # default=2
-                                        )
-                                        try:
-                                            is_ocr = ocr.convert(**kwargs)
-                                        except SubprocessOutputError as e:
-                                            print(e)
-                                            is_ocr = False
-                                    except Exception as ex:
-                                        print(ex)
-                                        is_ocr = False
-
-            end_ocr_time = datetime.now()
-            end_ocr_time_dispaly = end_ocr_time.strftime("%H:%M:%S")
-            total_ocr_time = end_ocr_time - start_ocr_time
-            print("End  reOCR  Time =", end_ocr_time_dispaly)
-            print("Total OCR Time:", total_ocr_time)
-            print(
-                f"Count of documents reOCRed / total: {reocr_count} / {total_num_files}"
-            )
-        # Process files
-        pool.map(single_process, *data_inputs, batch_size)
-    else:
-        for item in data_inputs:
-            single_process(*item)
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time =", current_time)
-
-    # TODO: actually track how many were successfully processed
-    print("Documents parsed (or attempted): %i", len(data_inputs))
+    for f_name in to_process:
+        parse(f_name=f_name, out_dir=destination)
