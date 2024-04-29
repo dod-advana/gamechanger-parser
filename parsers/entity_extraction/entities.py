@@ -117,4 +117,3 @@ def extract_entities(doc_dict: dict) -> None:
     most_common_entities = [entity for (entity, _) in top_counts]
 
     doc_dict[FN.TOP_ENTITIES] = most_common_entities
-    print("entities", doc_dict[FN.TOP_ENTITIES])

@@ -78,4 +78,3 @@ def add_ref_list(doc_dict: dict) -> None:
         )
 
     doc_dict[FN.REF_LIST] = list(found_references_accumulator)
-    print('ref list', doc_dict[FN.REF_LIST])
