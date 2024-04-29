@@ -16,6 +16,7 @@ RUN apt-get install -y git vim
 COPY . /home/
 
 # Install defined dependencies
+# leaving --no-deps to strictly track dependencies
 RUN pip3 install -r /home/config/requirements.txt --no-deps
 
 # Install Jupyter to cli
