@@ -6,7 +6,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-local_destination_location = f'{BASE_DIR}/parsers/topic_extraction/model/'
+local_destination_location = f'{BASE_DIR}/policy_analytics_parser/topic_extraction/model/'
 
 source_bucket = "advana-data-zone"
 source_prefix = "bronze/gamechanger/models/topic_model/v2"

@@ -163,4 +163,3 @@ cython_debug/
 
 # Whl Dir
 whl_creation_output/
-devTools/whl/gc_parser_*

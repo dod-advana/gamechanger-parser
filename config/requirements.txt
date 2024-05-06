@@ -6,6 +6,7 @@ coloredlogs==14.0
 cryptography==42.0.5
 Deprecated==1.2.14
 filetype==1.0.7
+gensim==4.3.2
 html5lib==1.1
 humanfriendly==10.0
 img2pdf==0.4.0

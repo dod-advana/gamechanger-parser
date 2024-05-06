@@ -12,7 +12,7 @@ def writer(out_dir, extracted_text_dict):
         p.mkdir()
     print('writing to', p.joinpath(outname))
     with open(p.joinpath(outname), "w") as fp:
-        json.dump(extracted_text_dict, fp)
+        json.dump(extracted_text_dict, fp, indent=4)
 
 
 print("running examples")
