@@ -26,7 +26,7 @@ try:
         # use with an entire pipeline
         policy_text_pipeline(
             extracted_text_dict, 
-            pipeline_args={"destination": "policy_analytics_processed/"}
+            pipeline_args={"destination": "example_policy_analytics_output/"}
         )
         
 except Exception as e:
