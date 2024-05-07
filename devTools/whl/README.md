@@ -1,5 +1,5 @@
-
 # Project Setup and Testing Instructions
+### Creating venv steps are in root config/ folder ! Just stop before req.txt download and follow these steps instead
 
 ## 1. Creating the Wheel File
 
@@ -12,54 +12,28 @@ python setup.py bdist_wheel
 This command will:
 
 - Build the package.
-- Download dependencies specified in `config/requirements.txt`.
-- Include the `parsers/` folder within the package.
+- Package dependencies specified in root `config/requirements.txt`.
+- Include the root `policy_analytics_parser/` folder within the package.
 
-## 2. Testing the Wheel File
-
-As of April 1, 2024, Databricks is using Python 3.8.10. To ensure compatibility, create a virtual environment using the same Python version and test the wheel file within this environment.
-
-### Setting up the Virtual Environment
-
-Download Python 3.8.10 from the [official Python release page](https://www.python.org/downloads/release/python-3810/).
-
-Create and activate a virtual environment:
-
-```bash
-py -m venv dbksVenv
-source dbksVenv/Scripts/activate
-pip install --upgrade pip
-```
-
-### Installing the Wheel File
+## 2. Installing the Wheel File
 
 Install the wheel file using pip:
 
-```bash
-pip install ./whl_creation_output/dist/[file-name].whl
-```
+```python -m pip install ./whl_creation_output/dist/[file-name].whl ```
 
-### Common Errors During Installation
+### (Windows) Common Errors During Installation
 
 - If you encounter an error stating that Microsoft Visual C++ 14.0 or greater is required, refer to [this Stack Overflow post](https://stackoverflow.com/questions/64261546/how-to-solve-error-microsoft-visual-c-14-0-or-greater-is-required-when-inst) for a solution.
 
-## Running the Test Script
+## To Use GAMECHANGER Specific Parser and Topic Models
+```python -m pip install boto3```<br><br>
+(must have s3 access to advana-data-zone)<br>
+```python ../../config/get_topic_model.py```
 
-Execute the test script to ensure everything is set up correctly:
 
-```bash
-py testVenv.py
-```
+## That's it! Can return to root and run the parser python script!
 
-### Common Errors During Test Execution
+ <br><br>
+# UploadWhls3
 
-- If you get an `OSError` indicating that the Tesseract library cannot be loaded, ensure that Tesseract is installed on your computer. Tesseract is a dependency of `ocrmypdf`. Installation instructions can be found on the [Tesseract GitHub page](https://github.com/UB-Mannheim/tesseract/wiki).
-
-- After installing Tesseract, verify its installation by running `tesseract --version` in your command prompt or terminal. Ensure that Leptonica is also listed in the output.
-
-- If there are issues related to Leptonica, verify that the following files are present in the Tesseract installation directory (e.g., `C:\Users\[user]\AppData\Local\Programs\Tesseract-OCR`):
-  - `liblept-5.dll` (Windows)
-  - `liblept*.dylib` (macOS)
-  - `liblept*.so` (Linux/BSD)
-
-- Refer to the `example-leptonica.py` script for an example of how to set the Leptonica path. You may need to adjust the path in `gamechanger-parser/devTools/whl/dbksVenv/Lib/site-packages/ocrmypdf/leptonica.py` accordingly.
+ - Once whl_creation_output/ is created, can run ```python whlLocalExract.py``` to copy wheel to a local folder to share with cyber team and save publically.

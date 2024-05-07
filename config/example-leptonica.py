@@ -30,7 +30,9 @@ from ocrmypdf.lib._leptonica import ffi
 from ocrmypdf.subprocess import shim_paths_with_program_files
 
 # pylint: disable=protected-access
-tesseract_path = 'C:/Users/[REPLACE]/AppData/Local/Programs/Tesseract-OCR/libleptonica-6.dll' # DEFINE YOUR PATH!
+## WINDOWS USERS!!
+# DEFINE YOUR PATH!
+tesseract_path = 'C:/Users/[REPLACE]/AppData/Local/Programs/Tesseract-OCR/libleptonica-6.dll' 
 
 logger = logging.getLogger(__name__)
 

@@ -43,9 +43,9 @@ def move_build_artifcats(target_dir, base_dir):
 package_name = f'gc-parser-{timeNow}'
 setup(
     name=package_name,
-    version='1.0.0',
+    version='1.0.1',
     author='GAMECHANGER DE Policy',
-    packages=find_packages(where=base_dir, include=['parsers*']), # Recursively include everything in parsers/
+    packages=find_packages(where=base_dir, include=['policy_analytics_parser*']), # Recursively include everything in folder
     package_dir={'': base_dir}, # Project root
     install_requires=required, # requirment.txt
     description='gc-parser main branch',
