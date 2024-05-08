@@ -36,20 +36,20 @@ Steps have been tested and designed using bash
 Modify `./setupDockerEnv.sh` to adjust default values.
 
 ## Run 
-`./setupDockerEnv.sh` to download required dependencies and map the container's port to `PORT` value.
+`config/dockerConf/setupDockerEnv.sh` from the root of the repo to download required dependencies and map the container's port to `PORT` value.
 
-`./start.sh` to start container
+`config/dockerConf/start.sh` to start container
 
 After container and image setup, a log will provide access URLs:
 
 ![Screenshot of Links Provided When Jupyter Server Starts](screenshotWalkthrough/JupLabLink.png)
 
-Copy and paste the second URL (http://127.0.0.1:888/) into your browser to begin testing using Jupyter Lab.
+Copy and paste the second URL (http://127.0.0.1:8888/) into your browser to begin testing using Jupyter Lab.
 Password is `gamechanger`
 
 ## Additional Steps for VS Code Development
 
-1. Navigate to `config/test.ipynb` in your browser to initialize the kernel. No import errors should occur:
+1. Navigate to `example.ipynb` in your browser to initialize the kernel. No import errors should occur:
 
    ![Jupyter Lab with successful test notebook run](screenshotWalkthrough/JupLabTestNotebook.png)
    If Import errors do Occur at this step, try turning kernel on.
@@ -71,7 +71,7 @@ New IDE will open, and look like this:
 
 ![Screenshot of IDE with app dir while connected to container](screenshotWalkthrough/containerIDE.png)
 
-3. In VS Code, reopen `config/test.ipynb`:
+3. In VS Code, reopen `example.ipynb`:
    - Choose the kernel at the top right of the notebook.
    - If prompted, install the Jupyter Extension:
 

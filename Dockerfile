@@ -20,7 +20,7 @@ COPY . /home/
 RUN pip3 install -r /home/config/requirements.txt --no-deps
 
 # Install Jupyter to cli
-RUN pip3 install jupyter
+RUN pip3 install jupyter smart-open scipy
 
 # flag to turn off token
 ENV JUPYTER_TOKEN=easy

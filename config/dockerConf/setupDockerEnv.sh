@@ -39,9 +39,6 @@ if docker ps -a | grep -q $CONTAINER_NAME; then
     docker rm $CONTAINER_NAME || { echo "Failed to remove container"; exit 1; }
 fi
 
-# cd to app's root
-cd ../../ || { echo "Failed to change directory"; exit 1; }
-
 # Build the Docker container
 echo "Building the Docker container..."
 docker build --no-cache -t $IMAGE_NAME . || { echo "Docker build failed"; exit 1; }
